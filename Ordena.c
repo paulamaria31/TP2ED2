@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define JOAO
 #include "Aluno.h"
 
 int compararAsc(const void *a, const void *b) {
