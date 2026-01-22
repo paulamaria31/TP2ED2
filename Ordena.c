@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Aluno.h"
-
+/*
 int compararAsc(const void *a, const void *b) {
     Aluno *alunoA = (Aluno *)a;
     Aluno *alunoB = (Aluno *)b;
@@ -72,3 +72,4 @@ int main() {
     free(alunos);
     return 0;
 }
+    */
