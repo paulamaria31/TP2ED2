@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define JOAO
 #include "Aluno.h"
 
 int compararAsc(const void *a, const void *b) {
@@ -10,6 +11,7 @@ int compararAsc(const void *a, const void *b) {
     if (alunoA->nota > alunoB->nota) return 1;
     return 0;
 }
+
 
 int compararDesc(const void *a, const void *b) {
     return compararAsc(b, a); // Inverte a lógica da ascendente
