@@ -2,9 +2,9 @@
 #include <stdbool.h>
 
 //Tipos de pesquisa
-void ordena2F(int quantidade);
-void ordenaF(int quantidade);
-void ordenaQuick(int quantidade);
+void ordena2F(int quantidade, int situacao);
+void ordenaF(int quantidade, int situacao);
+void ordenaQuick(int quantidade, int situacao);
 
 int main(int argc, char *argv[])
 {
@@ -37,13 +37,13 @@ int main(int argc, char *argv[])
     switch (metodo)
     {
     case 1:
-        ordena2F(quantidade);
+        ordena2F(quantidade, situacao);
         break;
     case 2:
-        ordenaF(quantidade);
+        ordenaF(quantidade, situacao);
         break;
     case 3:
-        ordenaQuick(quantidade);
+        ordenaQuick(quantidade, situacao);
         break;
     default:
         printf("Nao existe esse metodo de pesquisa\n");
@@ -53,12 +53,12 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void ordena2F(int quantidade) {
+void ordena2F(int quantidade, int situacao) {
 
 }
-void ordenaF(int quantidade){
+void ordenaF(int quantidade, int situacao){
 
 }
-void ordenaQuick(int quantidade){
+void ordenaQuick(int quantidade, int situacao){
 
 }
