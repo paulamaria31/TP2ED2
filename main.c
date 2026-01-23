@@ -1,7 +1,9 @@
 #include "Aluno.h"
+#include "ordenaF1.h"
 #include <stdbool.h>
+#include <stdio.h>
 
-//Tipos de pesquisa
+// Tipos de pesquisa
 void ordena2F(int quantidade, int situacao);
 void ordenaF(int quantidade, int situacao);
 void ordenaQuick(int quantidade, int situacao);
@@ -53,12 +55,72 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void ordena2F(int quantidade, int situacao) {
+void ordena2F(int quantidade, int situacao)
+{
+    FILE *arq;
+
+    switch (situacao)
+    {
+    case 1:
+        // ascendente
+        arq = fopen("Ascendente.txt", "r");
+        break;
+    case 2:
+        // descendente
+        arq = fopen("Descendente.txt", "r");
+        break;
+    case 3:
+        // aleatorio
+        arq = fopen("PROVAO.TXT", "r");
+        break;
+    default:
+        break;
+    }
+}
+void ordenaF(int quantidade, int situacao)
+{
+    FILE *arq;
+
+    switch (situacao)
+    {
+    case 1:
+        // ascendente
+        arq = fopen("Ascendente.txt", "r");
+        break;
+    case 2:
+        // descendente
+        arq = fopen("Descendente.txt", "r");
+        break;
+    case 3:
+        // aleatorio
+        arq = fopen("PROVAO.TXT", "r");
+        break;
+    default:
+        break;
+    }
+
+    lerRegistro(quantidade, arq);
 
 }
-void ordenaF(int quantidade, int situacao){
+void ordenaQuick(int quantidade, int situacao)
+{
+    FILE *arq;
 
-}
-void ordenaQuick(int quantidade, int situacao){
-
+    switch (situacao)
+    {
+    case 1:
+        // ascendente
+        arq = fopen("Ascendente.txt", "r");
+        break;
+    case 2:
+        // descendente
+        arq = fopen("Descendente.txt", "r");
+        break;
+    case 3:
+        // aleatorio
+        arq = fopen("PROVAO.TXT", "r");
+        break;
+    default:
+        break;
+    }
 }
