@@ -63,15 +63,15 @@ void ordena2F(int quantidade, int situacao)
     {
     case 1:
         // ascendente
-        arq = fopen("Ascendente.txt", "r");
+        arq = fopen("Ascendente.bin", "rb");
         break;
     case 2:
         // descendente
-        arq = fopen("Descendente.txt", "r");
+        arq = fopen("Descendente.bin", "rb");
         break;
     case 3:
         // aleatorio
-        arq = fopen("PROVAO.TXT", "r");
+        arq = fopen("PROVAO.bin", "rb");
         break;
     default:
         break;
@@ -85,21 +85,22 @@ void ordenaF(int quantidade, int situacao)
     {
     case 1:
         // ascendente
-        arq = fopen("Ascendente.txt", "r");
+        arq = fopen("Ascendente.bin", "rb");
         break;
     case 2:
         // descendente
-        arq = fopen("Descendente.txt", "r");
+        arq = fopen("Descendente.bin", "rb");
         break;
     case 3:
         // aleatorio
-        arq = fopen("PROVAO.TXT", "r");
+        arq = fopen("PROVAO.bin", "rb");
         break;
     default:
         break;
     }
 
     lerRegistro(quantidade, arq);
+    fclose(arq);
 
 }
 void ordenaQuick(int quantidade, int situacao)
@@ -110,15 +111,15 @@ void ordenaQuick(int quantidade, int situacao)
     {
     case 1:
         // ascendente
-        arq = fopen("Ascendente.txt", "r");
+        arq = fopen("Ascendente.bin", "rb");
         break;
     case 2:
         // descendente
-        arq = fopen("Descendente.txt", "r");
+        arq = fopen("Descendente.bin", "rb");
         break;
     case 3:
         // aleatorio
-        arq = fopen("PROVAO.TXT", "r");
+        arq = fopen("PROVAO.bin", "rb");
         break;
     default:
         break;
