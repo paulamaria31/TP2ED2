@@ -4,6 +4,8 @@
 void lerRegistro(int quantidade, FILE *arq)
 {
     // Numero de fitas
+    int registrosPorFitas[19] = {0};
+    int contRegistrosFitas = 0;
     int numFitas = 1;
     char nomeArquivo[20];
     sprintf(nomeArquivo, "Fita%d.bin", numFitas);
@@ -25,6 +27,7 @@ void lerRegistro(int quantidade, FILE *arq)
         // Escrevo o aluno do heap na fita de entrada
         ultimoSair = alunos[0];
         fwrite(&ultimoSair, sizeof(Registro), 1, fitaAtual);
+        registrosPorFitas[(numFitas - 1) % 19]++;
 
         // Leio outro aluno para entrar
         if (fread(&aluno, sizeof(Registro), 1, arq) == 1)
@@ -77,12 +80,14 @@ void lerRegistro(int quantidade, FILE *arq)
         }
     }
 
-    //Preciso descarregar os 19 que estao na memoria RAM
+    // Preciso descarregar os 19 que estao na memoria RAM
     for (int i = 0; i < TAM_VET; i++)
     {
-        //Coloco na fita o aluno com heap
+        // Coloco na fita o aluno com heap
         ultimoSair = alunos[0];
         fwrite(&ultimoSair, sizeof(Registro), 1, fitaAtual);
+
+        registrosPorFitas[(numFitas - 1) % 19]++;
 
         // 2. Para o próximo menor subir, "matamos" o atual
         // dando a ele uma marcação impossível (ex: 2)
@@ -93,6 +98,8 @@ void lerRegistro(int quantidade, FILE *arq)
     }
 
     fclose(fitaAtual);
+
+    intercalação();
 }
 
 void heap(Registro alunos[], int n)
