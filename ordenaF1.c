@@ -104,61 +104,50 @@ void lerRegistro(int quantidade, FILE *arq)
 
 void intercalacao(int registrosPorFitas[])
 {
-    // Matriz de registros
-    Registro alunosPrincipais[19][1];
-    Registro alunosFita[19];
-    int coluna;
-    FILE* fitaSaida = fopen("Saida.bin", )
+    Registro matrizBuffers[19][19];
+    FILE* fitasEntrada[19];
+    FILE* fitaSaida = fopen("Saida.bin", "wb");
+    char nomeFita[20];
 
-    //Leitura por bloco
-    for (int d = 0; d < TAM_VET; d++)
-    {
-        //Leitura por fita
-        for (int c = 0; c < TAM_VET; c++)
-        {
-            // 1. Gera o nome da fita e abre o arquivo UMA VEZ por fita
-            sprintf(nomeFita, "Fita%d.bin", c + 1);
-            FILE *fitaAtual = fopen(nomeFita, "rb");
-
-            if (fitaAtual == NULL)
-                // Se a fita atual for nula quer dizer que nao tem registros e posso ir pro proximo bloco
-                // Fazer
-                continue;
-
-            fread(&alunosPrincipais[c][1], sizeof(Registro), 19, fitaAtual);
-
-            fclose(fitaAtual); // Fecha após ler os 19 registros daquela fita
-        }
-        heap(alunosPrincipais, 19);
-
-
+    // 1. Abrir as 19 fitas de entrada no início (uma única vez)
+    for (int i = 0; i < 19; i++) {
+        sprintf(nomeFita, "Fita%d.bin", i + 1);
+        fitasEntrada[i] = fopen(nomeFita, "rb");
     }
 
-    // Final
+    // 2. Loop principal para processar TODOS os blocos
+    // Precisamos de uma condição para saber se ainda há dados nas fitas
+    bool aindaTemDados = true;
+    while (aindaTemDados) {
+        aindaTemDados = false;
 
-    // primeiro a gente vai ler os primeiros blocos da PRIMEIRA COLUNA
-    // vai fazer o heap e jogar na fita de saida
+        // PREENCHIMENTO DA MATRIZ (O que você pediu)
+        for (int i = 0; i < 19; i++) {
+            if (fitasEntrada[i] != NULL && !feof(fitasEntrada[i])) {
+                // Lê os 19 registros da fita 'i' para a linha 'i' da matriz
+                int lidos = fread(matrizBuffers[i], sizeof(Registro), 19, fitasEntrada[i]);
+                if (lidos > 0) aindaTemDados = true;
+            }
+        }
 
-    // depois vamos ler os blocos da segunda coluna
-    // fazer o heap e jogar na fita de saida
+        if (!aindaTemDados) break;
 
-    // 45 67 89 67 56      43 56 78 90 23     [38] = 19 19
+        // 3. FAZER O HEAP E JOGAR NA SAÍDA
+        // Aqui você precisa decidir: você quer ordenar a matriz 19x19 inteira 
+        // ou quer intercalar os topos? 
+        // Se for intercalar, usamos o Heap de 19 elementos (um de cada fita).
+        processarHeapIntercalacao(matrizBuffers, fitaSaida);
 
-    // 45 67 89 67 56      43 56 78 90 23
+        // O loop 'while' vai voltar, ler os PRÓXIMOS 19 de cada fita
+        // e preencher a matriz novamente, exatamente como você quer.
+    }
 
-    // 45 67 89 67 56      43 56 78 90 23
-
-    // 45 67 89 67 56      43 56 78 90 23
-
-    // 45 67 89 67 56      43 56 78 90 23
-
-    // 45 67 89 67 56      43 56 78 90 23
-
-    // preciso de um for que é por coluna (quantidade de blocos por fita)
-    // e depois o for que é por linha (fita)
+    // 4. Fechar tudo ao final
+    for (int i = 0; i < 19; i++) if (fitasEntrada[i]) fclose(fitasEntrada[i]);
+    fclose(fitaSaida);
 }
 
-void heap(Registro alunos[][], int n)
+void heap(Registro alunos[], int n)
 {
     for (int c = (n / 2) - 1; c >= 0; c--)
     {
@@ -166,7 +155,7 @@ void heap(Registro alunos[][], int n)
     }
 }
 
-void refazerHeap(Registro alunos[][], int i, int n)
+void refazerHeap(Registro alunos[], int i, int n)
 {
     int menor = i;
     // Filho da esquerda
