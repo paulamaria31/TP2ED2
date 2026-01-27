@@ -105,46 +105,36 @@ void lerRegistro(int quantidade, FILE *arq)
 void intercalacao(int registrosPorFitas[])
 {
     // Matriz de registros
-    Registro alunosPrincipais[TAM_VET][TAM_VET];
+    Registro alunosPrincipais[19][1];
     Registro alunosFita[19];
     int coluna;
+    FILE* fitaSaida = fopen("Saida.bin", )
 
-    // Marcador que vai mostrar ate qual fita tem registro
-    int marcador = 0;
-    for (int c = 0; c < TAM_VET; c++)
+    //Leitura por bloco
+    for (int d = 0; d < TAM_VET; d++)
     {
-        if (registrosPorFitas[c] % 19 == 0)
+        //Leitura por fita
+        for (int c = 0; c < TAM_VET; c++)
         {
+            // 1. Gera o nome da fita e abre o arquivo UMA VEZ por fita
+            sprintf(nomeFita, "Fita%d.bin", c + 1);
+            FILE *fitaAtual = fopen(nomeFita, "rb");
+
+            if (fitaAtual == NULL)
+                // Se a fita atual for nula quer dizer que nao tem registros e posso ir pro proximo bloco
+                // Fazer
+                continue;
+
+            fread(&alunosPrincipais[c][1], sizeof(Registro), 19, fitaAtual);
+
+            fclose(fitaAtual); // Fecha após ler os 19 registros daquela fita
         }
-        if (registrosPorFitas[c] == 0)
-        {
-            // Aonde o marcador pegar o index, é por que tem registro na fita
-            marcador = c;
-        }
-    }
+        heap(alunosPrincipais, 19);
 
-    // Registro ate a fita 4
-    for (int c = 0; c < TAM_VET; c++) // 'c' percorre as FITAS (colunas)
-    {
-        // 1. Gera o nome da fita e abre o arquivo UMA VEZ por fita
-        sprintf(nomeFita, "Fita%d.bin", c + 1);
-        FILE *fitaAtual = fopen(nomeFita, "rb");
 
-        if (fitaAtual == NULL)
-            continue;
-
-        for (int m = 0; m < TAM_VET; m++) // 'm' percorre os REGISTROS (linhas)
-        {
-            // 2. Lê um único registro por vez para a posição correta
-            // Note que inverti para [m][c] para preencher a coluna 'c'
-            fread(&alunosPrincipais[m][c], sizeof(Registro), 1, fitaAtual);
-        }
-
-        fclose(fitaAtual); // Fecha após ler os 19 registros daquela fita
     }
 
     // Final
-    heap(alunosPrincipais, 19);
 
     // primeiro a gente vai ler os primeiros blocos da PRIMEIRA COLUNA
     // vai fazer o heap e jogar na fita de saida
