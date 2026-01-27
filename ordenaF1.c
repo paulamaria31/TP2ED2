@@ -105,46 +105,108 @@ void lerRegistro(int quantidade, FILE *arq)
 void intercalacao(int registrosPorFitas[])
 {
     Registro matrizBuffers[19][19];
-    FILE* fitasEntrada[19];
-    FILE* fitaSaida = fopen("Saida.bin", "wb");
+    int quantidadeLidaFita[19];
+    FILE *fitasEntrada[19];
+    int indiceAtualFita[19];
+    FILE *fitaSaida = fopen("Saida.bin", "wb");
     char nomeFita[20];
 
-    // 1. Abrir as 19 fitas de entrada no início (uma única vez)
-    for (int i = 0; i < 19; i++) {
+    //Abro as 19 fitas de entrada no início (uma única vez)
+    for (int i = 0; i < 19; i++)
+    {
         sprintf(nomeFita, "Fita%d.bin", i + 1);
         fitasEntrada[i] = fopen(nomeFita, "rb");
     }
 
-    // 2. Loop principal para processar TODOS os blocos
-    // Precisamos de uma condição para saber se ainda há dados nas fitas
+    // Loop para processar os blocos
     bool aindaTemDados = true;
-    while (aindaTemDados) {
+    while (aindaTemDados)
+    {
+        // Ainda tem dados inicia falso mas fica verdadeiro depois
         aindaTemDados = false;
 
-        // PREENCHIMENTO DA MATRIZ (O que você pediu)
-        for (int i = 0; i < 19; i++) {
-            if (fitasEntrada[i] != NULL && !feof(fitasEntrada[i])) {
-                // Lê os 19 registros da fita 'i' para a linha 'i' da matriz
+        // Vou ler bloco por bloco por fita
+        for (int i = 0; i < 19; i++)
+        {
+            // Verifico se a fita tem informação ou senão é o final
+            if (fitasEntrada[i] != NULL && !feof(fitasEntrada[i]))
+            {
+                // Leio os 19 registros da fita e armazeno
                 int lidos = fread(matrizBuffers[i], sizeof(Registro), 19, fitasEntrada[i]);
-                if (lidos > 0) aindaTemDados = true;
+
+                if (lidos > 0)
+                {
+                    // Se o lidos for maior que 0, ainda tem informação para ser lido
+                    aindaTemDados = true;
+                    // Guardamos quantos registros realmente lemos dessa fita (pode ser < 19)
+                    quantidadeLidaFita[i] = lidos;
+                    // Ainda nao usamos nenhum desses novos dados
+                    indiceAtualFita[i] = 0;
+                }
+                else
+                {
+                    // Se o lidos for zero quer dizer que eu nao li nada
+                    quantidadeLidaFita[i] = 0;
+                }
             }
         }
 
-        if (!aindaTemDados) break;
+        // Se não tiver dados, posso dar um break
+        if (!aindaTemDados)
+            break;
 
-        // 3. FAZER O HEAP E JOGAR NA SAÍDA
-        // Aqui você precisa decidir: você quer ordenar a matriz 19x19 inteira 
-        // ou quer intercalar os topos? 
-        // Se for intercalar, usamos o Heap de 19 elementos (um de cada fita).
-        processarHeapIntercalacao(matrizBuffers, fitaSaida);
+        //Criamos um vetor para o heap
+        Registro heapIntercalacao[19];
+        for (int i = 0; i < 19; i++)
+        {
+            // Se tiver registro na fita
+            if (quantidadeLidaFita[i] > 0)
+            {
+                // Pego o primeiro registro de cada fita
+                heapIntercalacao[i] = matrizBuffers[i][0];
+                // Coloco de qual fita esse registro veio
+                heapIntercalacao[i].idFitaOrigem = i; // Importante para saber de onde veio
+            }
+            else
+            {
+                // A posicao especifica da fita esta vazia
+                heapIntercalacao[i].marcado = 2;
+            }
+        }
+        // Faço um heap com os elementos
+        heap(heapIntercalacao, 19);
 
-        // O loop 'while' vai voltar, ler os PRÓXIMOS 19 de cada fita
-        // e preencher a matriz novamente, exatamente como você quer.
+        //Se a fita nao estiver vazia, entao tem dados para processar
+        while (heapIntercalacao[0].marcado < 2)
+        {
+            //Pego o menor valor que esta no heap e coloco na fita de saida
+            fwrite(&heapIntercalacao[0], sizeof(Registro), 1, fitaSaida);
+
+            //Salvo a fita de origem dele
+            int f = heapIntercalacao[0].idFitaOrigem;
+
+            //Incremento o indice da fita de onde saiu para pegar mais um registro
+            indiceAtualFita[f]++;
+
+            //Se ainda tiver registros nessa fita
+            if (indiceAtualFita[f] < quantidadeLidaFita[f])
+            {
+                //Pego o registro para fazer o heap e coloco no lugar de quem saiu
+                heapIntercalacao[0] = matrizBuffers[f][indiceAtualFita[f]];
+                //Coloco a fita de origem dele
+                heapIntercalacao[0].idFitaOrigem = f;
+            }
+            else
+            {
+                //Se nao tiver mais fita marcamos como dois pois não tem como mais pegar
+                heapIntercalacao[0].marcado = 2;
+            }
+
+            //Refaço o heap para o novo que entrou
+            refazerHeap(heapIntercalacao, 0, 19);
+        }
+
     }
-
-    // 4. Fechar tudo ao final
-    for (int i = 0; i < 19; i++) if (fitasEntrada[i]) fclose(fitasEntrada[i]);
-    fclose(fitaSaida);
 }
 
 void heap(Registro alunos[], int n)
