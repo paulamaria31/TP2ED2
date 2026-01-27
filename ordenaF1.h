@@ -11,9 +11,9 @@ typedef struct Registro
     int marcado;
 }Registro;
 
-void heap(Registro alunos[], int n);
-void intercalção();
-void refazerHeap (Registro alunos[], int i, int n);
+void heap(Registro alunos[][], int n);
+void intercalacao(int registrosPorFitas[]);
+void refazerHeap (Registro alunos[][], int i, int n);
 bool ehMaior(Registro a, Registro b);
 void lerRegistro(int quantidade, FILE* arq);
 
