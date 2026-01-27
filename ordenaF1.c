@@ -99,10 +99,76 @@ void lerRegistro(int quantidade, FILE *arq)
 
     fclose(fitaAtual);
 
-    intercalação();
+    intercalação(registrosPorFitas);
 }
 
-void heap(Registro alunos[], int n)
+void intercalacao(int registrosPorFitas[])
+{
+    // Matriz de registros
+    Registro alunosPrincipais[TAM_VET][TAM_VET];
+    Registro alunosFita[19];
+    int coluna;
+
+    // Marcador que vai mostrar ate qual fita tem registro
+    int marcador = 0;
+    for (int c = 0; c < TAM_VET; c++)
+    {
+        if (registrosPorFitas[c] % 19 == 0)
+        {
+        }
+        if (registrosPorFitas[c] == 0)
+        {
+            // Aonde o marcador pegar o index, é por que tem registro na fita
+            marcador = c;
+        }
+    }
+
+    // Registro ate a fita 4
+    for (int c = 0; c < TAM_VET; c++) // 'c' percorre as FITAS (colunas)
+    {
+        // 1. Gera o nome da fita e abre o arquivo UMA VEZ por fita
+        sprintf(nomeFita, "Fita%d.bin", c + 1);
+        FILE *fitaAtual = fopen(nomeFita, "rb");
+
+        if (fitaAtual == NULL)
+            continue;
+
+        for (int m = 0; m < TAM_VET; m++) // 'm' percorre os REGISTROS (linhas)
+        {
+            // 2. Lê um único registro por vez para a posição correta
+            // Note que inverti para [m][c] para preencher a coluna 'c'
+            fread(&alunosPrincipais[m][c], sizeof(Registro), 1, fitaAtual);
+        }
+
+        fclose(fitaAtual); // Fecha após ler os 19 registros daquela fita
+    }
+
+    // Final
+    heap(alunosPrincipais, 19);
+
+    // primeiro a gente vai ler os primeiros blocos da PRIMEIRA COLUNA
+    // vai fazer o heap e jogar na fita de saida
+
+    // depois vamos ler os blocos da segunda coluna
+    // fazer o heap e jogar na fita de saida
+
+    // 45 67 89 67 56      43 56 78 90 23     [38] = 19 19
+
+    // 45 67 89 67 56      43 56 78 90 23
+
+    // 45 67 89 67 56      43 56 78 90 23
+
+    // 45 67 89 67 56      43 56 78 90 23
+
+    // 45 67 89 67 56      43 56 78 90 23
+
+    // 45 67 89 67 56      43 56 78 90 23
+
+    // preciso de um for que é por coluna (quantidade de blocos por fita)
+    // e depois o for que é por linha (fita)
+}
+
+void heap(Registro alunos[][], int n)
 {
     for (int c = (n / 2) - 1; c >= 0; c--)
     {
@@ -110,7 +176,7 @@ void heap(Registro alunos[], int n)
     }
 }
 
-void refazerHeap(Registro alunos[], int i, int n)
+void refazerHeap(Registro alunos[][], int i, int n)
 {
     int menor = i;
     // Filho da esquerda
