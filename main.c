@@ -99,10 +99,11 @@ void ordenaF(int quantidade, int situacao)
         break;
     }
 
-    lerRegistro(quantidade, arq);
+    ordernarArquivo(quantidade, arq);
     fclose(arq);
 
 }
+
 void ordenaQuick(int quantidade, int situacao)
 {
     FILE *arq;
@@ -124,4 +125,6 @@ void ordenaQuick(int quantidade, int situacao)
     default:
         break;
     }
+
+    
 }

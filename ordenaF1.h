@@ -9,10 +9,13 @@ typedef struct Registro
 {
     Aluno aluno;
     int marcado;
+    int idFitaOrigem;
 }Registro;
 
+void ordernarArquivo(int quantidade, FILE* arq);
+void redistribuir();
 void heap(Registro alunos[], int n);
-void intercalacao(int registrosPorFitas[]);
+void intercalacao();
 void refazerHeap (Registro alunos[], int i, int n);
 bool ehMaior(Registro a, Registro b);
 void lerRegistro(int quantidade, FILE* arq);
