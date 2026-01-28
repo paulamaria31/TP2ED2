@@ -129,7 +129,7 @@ void lerRegistro(int quantidade, FILE *arq)
 
     fclose(fitaAtual);
 
-    intercalação(registrosPorFitas);
+    intercalação();
 }
 
 void intercalacao()
