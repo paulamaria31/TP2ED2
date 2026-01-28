@@ -1,5 +1,35 @@
 #include "ordenaF1.h"
 
+void ordernarArquivo(int quantidade, FILE* arq) {
+
+    //Chamo a funcao que vai ler os registros
+    lerRegistro(quantidade, arq);
+
+    int numBlocos;
+    //Primeira passa para intercalar
+    int passada = 1;
+
+    do {
+        printf("Iniciando Passada %d...\n", passada++);
+        
+        //Chamo a intercalação
+        intercalacao();
+        
+        //Conto os blocos da fita de saida
+        numBlocos = contarBlocos("Saida.bin");
+        printf("Blocos restantes na Saida.bin: %d\n", numBlocos);
+
+        //Se o numero de blocos for maior que um, precisa redistribuir
+        if (numBlocos > 1) {
+            redistribuir(); // Se ainda não acabou, espalha para as fitas e repete
+        }
+
+        //Enquanto tiver blocos continuo o processo
+    } while (numBlocos > 1);
+
+    printf("Ordenação concluída! O arquivo Saida.bin está 100%% ordenado.\n");
+}
+
 // Meu quantidade igual a 100,200,etc
 void lerRegistro(int quantidade, FILE *arq)
 {
@@ -102,7 +132,7 @@ void lerRegistro(int quantidade, FILE *arq)
     intercalação(registrosPorFitas);
 }
 
-void intercalacao(int registrosPorFitas[])
+void intercalacao()
 {
     Registro matrizBuffers[19][19];
     int quantidadeLidaFita[19];
@@ -110,8 +140,9 @@ void intercalacao(int registrosPorFitas[])
     int indiceAtualFita[19];
     FILE *fitaSaida = fopen("Saida.bin", "wb");
     char nomeFita[20];
+    int contFitaSaida = 0;
 
-    //Abro as 19 fitas de entrada no início (uma única vez)
+    // Abro as 19 fitas de entrada no início (uma única vez)
     for (int i = 0; i < 19; i++)
     {
         sprintf(nomeFita, "Fita%d.bin", i + 1);
@@ -155,7 +186,7 @@ void intercalacao(int registrosPorFitas[])
         if (!aindaTemDados)
             break;
 
-        //Criamos um vetor para o heap
+        // Criamos um vetor para o heap
         Registro heapIntercalacao[19];
         for (int i = 0; i < 19; i++)
         {
@@ -176,37 +207,107 @@ void intercalacao(int registrosPorFitas[])
         // Faço um heap com os elementos
         heap(heapIntercalacao, 19);
 
-        //Se a fita nao estiver vazia, entao tem dados para processar
+        // Se a fita nao estiver vazia, entao tem dados para processar
         while (heapIntercalacao[0].marcado < 2)
         {
-            //Pego o menor valor que esta no heap e coloco na fita de saida
+            // Pego o menor valor que esta no heap e coloco na fita de saida
             fwrite(&heapIntercalacao[0], sizeof(Registro), 1, fitaSaida);
+            contFitaSaida++;
 
-            //Salvo a fita de origem dele
+            // Salvo a fita de origem dele
             int f = heapIntercalacao[0].idFitaOrigem;
 
-            //Incremento o indice da fita de onde saiu para pegar mais um registro
+            // Incremento o indice da fita de onde saiu para pegar mais um registro
             indiceAtualFita[f]++;
 
-            //Se ainda tiver registros nessa fita
+            // Se ainda tiver registros nessa fita
             if (indiceAtualFita[f] < quantidadeLidaFita[f])
             {
-                //Pego o registro para fazer o heap e coloco no lugar de quem saiu
+                // Pego o registro para fazer o heap e coloco no lugar de quem saiu
                 heapIntercalacao[0] = matrizBuffers[f][indiceAtualFita[f]];
-                //Coloco a fita de origem dele
+                // Coloco a fita de origem dele
                 heapIntercalacao[0].idFitaOrigem = f;
             }
             else
             {
-                //Se nao tiver mais fita marcamos como dois pois não tem como mais pegar
+                // Se nao tiver mais fita marcamos como dois pois não tem como mais pegar
                 heapIntercalacao[0].marcado = 2;
             }
 
-            //Refaço o heap para o novo que entrou
+            // Refaço o heap para o novo que entrou
             refazerHeap(heapIntercalacao, 0, 19);
         }
-
     }
+
+}
+
+void redistribuir()
+{
+    char nomeFita[20];
+    FILE *fitasEntrada[19];
+    FILE *fitaSaida = fopen("Saida.bin", "rb");
+
+
+    // Abro as fitas de entrada
+    for (int i = 0; i < 19; i++)
+    {
+        sprintf(nomeFita, "Fita%d.bin", i + 1);
+        fitasEntrada[i] = fopen(nomeFita, "wb");
+    }
+
+    //Registros para poder comparar
+    Registro alunoAtual, alunoAnterior;
+    //Fita atual
+    int fitaAlvo = 0;
+    //Não dar erro no primeiro
+    bool primeiro = true;
+
+    //Leio um registro da fita de saida
+    while (fread(&alunoAtual, sizeof(Registro), 1, fitaSaida)) {
+        //Se a nota atual for menor que a anterior, quer dizer que começou um bloco novo
+        if (!primeiro && alunoAtual.aluno.nota < alunoAnterior.aluno.nota) {
+            //Inicio uma nova fita
+            fitaAlvo = (fitaAlvo + 1) % 19;
+        }
+        //Se não for, ainda estamos no mesmo bloco na saida e escrevo na fita atual
+        fwrite(&alunoAtual, sizeof(Registro), 1, fitasEntrada[fitaAlvo]);
+        //Agora o anterior recebe o atual para comparar
+        //E como não é o primeiro, não vai dar erro
+        alunoAnterior = alunoAtual;
+        primeiro = false;
+    }
+
+    //Fecho a fita de saida
+    fclose(fitaSaida);
+    //Fecho as fitas
+    for (int i = 0; i < 19; i++) fclose(fitasEntrada[i]);
+}
+
+//Recebo o nome do arquivo
+int contarBlocos(const char* nomeArquivo) {
+    //Abro o arquivo
+    FILE *arq = fopen(nomeArquivo, "rb");
+    //Vejo se é vazio
+    if (!arq) return 0;
+    //Contdador de blocos
+    int blocos = 0;
+    Registro atual, anterior;
+    //Leio o registro atual do arquivo para usar como base
+    if (fread(&anterior, sizeof(Registro), 1, arq)) {
+        //Ja incremento o contador pois pode ter um aluno so
+        blocos = 1;
+        //Leio o proximo para usar como base
+        while (fread(&atual, sizeof(Registro), 1, arq)) {
+            //Se o atual for menor que o anterior, logo iniciei um novo bloco
+            if (atual.aluno.nota < anterior.aluno.nota) blocos++;
+            //O anterior passa a ser o atual
+            anterior = atual;
+        }
+    }
+    //fecho o arquivo
+    fclose(arq);
+    //retorno o numero de blocos
+    return blocos;
 }
 
 void heap(Registro alunos[], int n)
