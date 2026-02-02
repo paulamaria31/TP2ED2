@@ -15,9 +15,9 @@ typedef struct {
 
 // Protótipos das funções
 void ordernarArquivo2F(int quantidade, FILE* arq);
-void faseGeracaoBlocos(FILE* arq, int* numBlocos);
+void faseGeracaoBlocos(FILE* arq, int* numBlocos, int quantidade);
 void faseIntercalacao2F(int numBlocos);
 void intercalarBlocos(int fitaMin, int fitaMax, int fitaDestinoIdx);
-void refazerHeap(RegistroHeap heap[], int i, int n);
+void refazerHeap2F(RegistroHeap heap[], int i, int n);
 
 #endif
