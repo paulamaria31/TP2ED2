@@ -1,5 +1,6 @@
 #include "Aluno.h"
 #include "ordenaF1.h"
+#include "ordena2F.h"
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -74,8 +75,18 @@ void ordena2F(int quantidade, int situacao)
         arq = fopen("PROVAO.bin", "rb");
         break;
     default:
-        break;
+        printf ("Situacao invalida.\n"); 
+        return;
     }
+
+    if (arq == NULL){
+        printf ("Erro ao abrir o arquivo binario. Verifique se ele foi gerado.\n"); //soh pra fazer uma verificacao de seguranca mesmo caso o arquivo binario nao exista
+        return;
+    }
+
+    ordenarArquivo2F (quantidade, arq); //aqui eu vou chamar minha funcao principal do metodo 1, que eh a que vai processar o arquivo que o switch abriu ai em cima
+    
+    fclose (arq); //tava faltando fechar o arquivo depois de tudo
 }
 void ordenaF(int quantidade, int situacao)
 {

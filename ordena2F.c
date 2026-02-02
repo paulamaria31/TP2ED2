@@ -97,10 +97,123 @@ void faseGeracaoBlocos(FILE* arq, int* numBlocos) {
     (*numBlocos)++; // Conta o último bloco
 }
 
+void intercalarBlocos(int fitaMin, int fitaMax, int fitaDestinoIdx) {
+    FILE* entradas[10];
+    char nome[20];
+    RegistroHeap memoria[10];
+    int fitasAtivas = 0;
+
+    // 1. Inicialização
+    for (int i = 0; i < 10; i++) {
+        sprintf(nome, "fita%d.bin", fitaMin + i);
+        entradas[i] = fopen(nome, "rb");
+        
+        if (entradas[i] && fread(&memoria[i].aluno, sizeof(Aluno), 1, entradas[i])) {
+            memoria[i].marcado = 0; // 0 significa "FITA ATIVA"
+            fitasAtivas++;
+            transferenciasLeitura++;
+        } else {
+            memoria[i].marcado = -1; // -1 significa "FITA VAZIA/FINALIZADA"
+            if(entradas[i]) {
+                fclose(entradas[i]);
+                entradas[i] = NULL;
+            }
+        }
+    }
+
+    sprintf(nome, "fita%d.bin", fitaDestinoIdx);
+    FILE* saida = fopen(nome, "ab"); 
+
+    // 2. Loop de Intercalação
+    while (fitasAtivas > 0) {
+        int menorIdx = -1;
+        
+        for (int i = 0; i < 10; i++) {
+            // CORREÇÃO AQUI: Verifica se a fita ainda tem registros (marcado == 0)
+            if (memoria[i].marcado == 0) { 
+                if (menorIdx == -1 || memoria[i].aluno.nota < memoria[menorIdx].aluno.nota) {
+                    menorIdx = i;
+                }
+            }
+        }
+
+        if (menorIdx == -1) break;
+
+        fwrite(&memoria[menorIdx].aluno, sizeof(Aluno), 1, saida);
+        transferenciasEscrita++;
+
+        // 3. Tenta ler o próximo da fita que "venceu"
+        if (fread(&memoria[menorIdx].aluno, sizeof(Aluno), 1, entradas[menorIdx])) {
+            transferenciasLeitura++;
+        } else {
+            memoria[menorIdx].marcado = -1; // MARCA COMO FINALIZADA
+            fitasAtivas--;
+            fclose(entradas[menorIdx]);
+            entradas[menorIdx] = NULL;
+        }
+    }
+    if (saida) fclose(saida);
+}
+
+void faseIntercalacao2F(int numBlocos) {
+    // No seu método, f=10. Fitas 1-10 (entrada) e 11-20 (saída)
+    int fitaEntradaMin = 1, fitaEntradaMax = 10;
+    int fitaSaidaMin = 11, fitaSaidaMax = 20;
+    
+    // Enquanto houver mais de um bloco, o arquivo ainda não está totalmente ordenado
+    while (numBlocos > 1) {
+        int blocosGeradosNestaPassada = 0;
+        
+        // Calculamos quantas vezes precisaremos rodar o "funil" de 10 caminhos
+        // Se temos 100 blocos e lemos 10 por vez, faremos 10 intercalações.
+        int numIntercalacoes = (numBlocos + 9) / 10;
+
+        for (int i = 0; i < numIntercalacoes; i++) {
+            // Define qual fita de saída vai receber o resultado desta rodada (11 a 20)
+            int fitaDestinoIdx = fitaSaidaMin + (i % 10);
+            
+            // Chama a função que realmente faz o merge dos 10 caminhos
+            intercalarBlocos(fitaEntradaMin, fitaEntradaMax, fitaDestinoIdx);
+            blocosGeradosNestaPassada++;
+        }
+
+        // --- O "Pulo do Gato": Inversão de Papéis ---
+        // Quem era saída vira entrada para a próxima rodada
+        int tempMin = fitaEntradaMin;
+        int tempMax = fitaEntradaMax;
+        fitaEntradaMin = fitaSaidaMin;
+        fitaEntradaMax = fitaSaidaMax;
+        fitaSaidaMin = tempMin;
+        fitaSaidaMax = tempMax;
+
+        // Atualizamos o número de blocos para a próxima passada
+        numBlocos = blocosGeradosNestaPassada;
+
+        // Importante: Limpar as fitas de saída da rodada anterior para não misturar dados
+        for (int j = fitaSaidaMin; j <= fitaSaidaMax; j++) {
+            char nome[20];
+            sprintf(nome, "fita%d.bin", j);
+            FILE* f = fopen(nome, "wb"); // Abre em modo "w" para zerar o arquivo
+            if(f) fclose(f);
+        }
+    }
+    
+    printf("\n--- Ordenação Finalizada ---\n");
+    printf("O arquivo final ordenado está na fita%d.bin\n", fitaEntradaMin);
+}
+
 void ordernarArquivo2F(int quantidade, FILE* arq) {
     int numBlocos = 0;
+
+    printf("Iniciando Fase 1: Geracao de Blocos (Selecao por Substituicao)...\n");
     faseGeracaoBlocos(arq, &numBlocos);
-    // Aqui viria a chamada da intercalação balanceada...
-    printf("Gerados %d blocos usando Seleção por Substituição.\n", numBlocos);
-    printf("Transferencias - Leitura: %ld, Escrita: %ld\n", transferenciasLeitura, transferenciasEscrita);
+    printf("Sucesso! %d blocos gerados.\n", numBlocos);
+
+    printf("Iniciando Fase 2: Intercalacao Balanceada (2f fitas)...\n");
+    faseIntercalacao2F(numBlocos);
+
+    printf("\nResultados do Metodo 1:\n");
+    printf("Transferencias de Leitura: %ld\n", transferenciasLeitura);
+    printf("Transferencias de Escrita: %ld\n", transferenciasEscrita);
+    printf("Comparacoes de Chaves: %ld\n", comparacoesChaves);
 }
