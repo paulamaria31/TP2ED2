@@ -11,6 +11,8 @@
 void ordena2F(int quantidade, int situacao, bool imprimir);
 void ordenaF(int quantidade, int situacao, bool imprimir);
 void ordenaQuick(int quantidade, int situacao, bool imprimir);
+void imprime_primeiros(const char *nomeArquivo, int qtd);
+int copia_n_registros(const char *src, const char *dst, int n);
 
 int main(int argc, char *argv[])
 {
