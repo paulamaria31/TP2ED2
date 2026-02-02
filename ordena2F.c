@@ -178,7 +178,7 @@ void faseIntercalacao2F(int numBlocos) {
     printf("O arquivo final ordenado esta na fita%d.bin\n", fitaEntradaMin);
 }
 
-void ordernarArquivo2F(int quantidade, FILE* arq) {
+void ordenarArquivo2F(int quantidade, FILE* arq) {
     int numBlocos = 0;
     printf("Iniciando Fase 1: Geracao de Blocos (Selecao por Substituicao)...\n");
     faseGeracaoBlocos(arq, &numBlocos, quantidade);
