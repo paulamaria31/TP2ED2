@@ -117,7 +117,7 @@ void ordenaF(int quantidade, int situacao, bool imprimir)
     }
 
     if (arq != NULL) {
-        ordernarArquivo(quantidade, arq);
+        ordenarArquivo(quantidade, arq);
         fclose(arq);
     } else {
         printf("Erro ao abrir arquivo para o Metodo 2.\n");

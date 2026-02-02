@@ -12,7 +12,7 @@ typedef struct Registro
     int idFitaOrigem;
 }Registro;
 
-void ordernarArquivo(int quantidade, FILE* arq);
+void ordenarArquivo(int quantidade, FILE* arq);
 void redistribuir();
 void heap(Registro alunos[], int n);
 void intercalacao();

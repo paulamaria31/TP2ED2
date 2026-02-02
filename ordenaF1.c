@@ -5,7 +5,7 @@ long long f1_transferenciasLeitura = 0;
 long long f1_transferenciasEscrita = 0;
 long long f1_comparacoesChaves = 0;
 
-void ordernarArquivo(int quantidade, FILE* arq, bool imprimir) {
+void ordenarArquivo(int quantidade, FILE* arq, bool imprimir) {
 clock_t t_inicio = clock();
     
     // Reset das métricas para cada execução
