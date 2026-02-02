@@ -1,5 +1,6 @@
 #include "Aluno.h"
 #include "ordenaF1.h"
+#include "ordena2F.h"
 #include "ordenaQuick.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -9,6 +10,7 @@
 
 // Tipos de pesquisa
 void ordena2F(int quantidade, int situacao, bool imprimir);
+void limparFitas();
 void ordenaF(int quantidade, int situacao, bool imprimir);
 void ordenaQuick(int quantidade, int situacao, bool imprimir);
 void imprime_primeiros(const char *nomeArquivo, int qtd);
@@ -16,7 +18,7 @@ int copia_n_registros(const char *src, const char *dst, int n);
 
 int main(int argc, char *argv[])
 {
-    int metodo, quantidade, situacao, chave;
+    int metodo, quantidade, situacao;
     bool imprimir;
 
     // Entrada da pesquisa
@@ -40,6 +42,8 @@ int main(int argc, char *argv[])
     {
         imprimir = false;
     }
+
+    limparFitas();
 
     // Vê qual metodo vai ser ultilizado
     switch (metodo)
@@ -90,7 +94,7 @@ void ordena2F(int quantidade, int situacao, bool imprimir)
         return;
     }
 
-    ordenarArquivo2F(quantidade, arq);
+    ordenarArquivo2F(quantidade, arq, imprimir);
 
     fclose(arq);
 }
@@ -117,7 +121,7 @@ void ordenaF(int quantidade, int situacao, bool imprimir)
     }
 
     if (arq != NULL) {
-        ordenarArquivo(quantidade, arq);
+        ordenarArquivo(quantidade, arq, imprimir);
         fclose(arq);
     } else {
         printf("Erro ao abrir arquivo para o Metodo 2.\n");
@@ -203,8 +207,7 @@ void imprime_primeiros(const char *nomeArquivo, int qtd)
     if (!f)
         return;
     Aluno a;
-    int lim = (qtd < 5) ? qtd : 5;
-    for (int i = 0; i < lim; i++)
+    for (int i = 0; i < qtd; i++)
     {
         if (fread(&a, sizeof(Aluno), 1, f) != 1)
             break;
@@ -240,4 +243,9 @@ int copia_n_registros(const char *src, const char *dst, int n)
     fclose(in);
     fclose(out);
     return 1;
+}
+
+void limparFitas() {
+    system("rm -f fita*.bin Fita*.bin Saida.bin WORK.bin");
+    printf("Arquivos temporários limpos com sucesso.\n");
 }

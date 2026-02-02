@@ -12,8 +12,10 @@ typedef struct Registro
     int idFitaOrigem;
 }Registro;
 
-void ordenarArquivo(int quantidade, FILE* arq);
+void ordenarArquivo(int quantidade, FILE* arq, bool imprimir);
 void redistribuir();
+int contarBlocos(const char* nomeArquivo);
+void imprime_resultado_final(const char* arquivo, int qtd);
 void heap(Registro alunos[], int n);
 void intercalacao();
 void refazerHeap (Registro alunos[], int i, int n);
