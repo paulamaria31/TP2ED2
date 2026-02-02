@@ -90,7 +90,7 @@ void ordena2F(int quantidade, int situacao, bool imprimir)
         return;
     }
 
-    ordernarArquivo2F(quantidade, arq);
+    ordenarArquivo2F(quantidade, arq);
 
     fclose(arq);
 }
