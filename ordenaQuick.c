@@ -3,15 +3,6 @@
 #include <string.h>
 #include <time.h>
 
-/*
- * Quicksort Externo (partição por área interna), ordenando por 'nota' em ordem ASCENDENTE.
- * Métricas exigidas no TP: leituras, escritas, comparações (sobre nota).
- *
- * IMPORTANTE:
- * - Usa índices de registros 1..N (como no material clássico do método).
- * - TAM_AREA definido em ordenaQuick.h (para o TP: 10).
- */
-
 static QuickMetrics g_qm = {0,0,0};
 void QuickResetMetrics(void) { g_qm = (QuickMetrics){0,0,0}; }
 QuickMetrics QuickGetMetrics(void) { return g_qm; }

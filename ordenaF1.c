@@ -1,6 +1,19 @@
 #include "ordenaF1.h"
+#include <time.h>
 
-void ordernarArquivo(int quantidade, FILE* arq) {
+long long f1_transferenciasLeitura = 0;
+long long f1_transferenciasEscrita = 0;
+long long f1_comparacoesChaves = 0;
+
+void ordernarArquivo(int quantidade, FILE* arq, bool imprimir) {
+clock_t t_inicio = clock();
+    
+    // Reset das métricas para cada execução
+    f1_transferenciasLeitura = 0;
+    f1_transferenciasEscrita = 0;
+    f1_comparacoesChaves = 0;
+
+    printf("Iniciando Fase 1: Geracao de blocos (Selecao por Substituicao)...\n");
 
     //Chamo a funcao que vai ler os registros
     lerRegistro(quantidade, arq);
@@ -27,6 +40,20 @@ void ordernarArquivo(int quantidade, FILE* arq) {
         //Enquanto tiver blocos continuo o processo
     } while (numBlocos > 1);
 
+    clock_t t_fim = clock();
+    double tempoTotal = (double)(t_fim - t_inicio) / CLOCKS_PER_SEC;
+
+    // Saída obrigatória conforme exigência do trabalho
+    printf("\n--- Resultados do Metodo 2 (F+1 fitas) ---\n");
+    printf("Transferencias de Leitura: %lld\n", f1_transferenciasLeitura);
+    printf("Transferencias de Escrita: %lld\n", f1_transferenciasEscrita);
+    printf("Comparacoes de Chaves: %lld\n", f1_comparacoesChaves);
+    printf("Tempo de Execucao: %.6f s\n", tempoTotal);
+
+    if (imprimir) {
+        imprime_resultado_final("Saida.bin", quantidade);
+    }
+
     printf("Ordenação concluída! O arquivo Saida.bin está 100%% ordenado.\n");
 }
 
@@ -48,6 +75,8 @@ void lerRegistro(int quantidade, FILE *arq)
 
     // Leio os 19 primeiros alunos
     int lidosInicial = fread(alunos, sizeof(Registro), TAM_VET, arq);
+    f1_transferenciasLeitura += lidosInicial;
+
     heap(alunos, lidosInicial);
 
     int c = lidosInicial;
@@ -58,12 +87,14 @@ void lerRegistro(int quantidade, FILE *arq)
         ultimoSair = alunos[0];
         fwrite(&ultimoSair, sizeof(Registro), 1, fitaAtual);
         registrosPorFitas[(numFitas - 1) % 19]++;
+        f1_transferenciasEscrita++;
 
         // Leio outro aluno para entrar
         if (fread(&aluno, sizeof(Registro), 1, arq) == 1)
         {
+            f1_transferenciasEscrita++;
             c++;
-            // Vendo se o que entrou agora é menor que o que saiu
+            f1_comparacoesChaves++;// Vendo se o que entrou agora é menor que o que saiu
             if (aluno.aluno.nota < ultimoSair.aluno.nota)
             {
                 aluno.marcado = 1;
@@ -116,6 +147,7 @@ void lerRegistro(int quantidade, FILE *arq)
         // Coloco na fita o aluno com heap
         ultimoSair = alunos[0];
         fwrite(&ultimoSair, sizeof(Registro), 1, fitaAtual);
+        f1_transferenciasEscrita++;
 
         registrosPorFitas[(numFitas - 1) % 19]++;
 
@@ -167,6 +199,7 @@ void intercalacao()
 
                 if (lidos > 0)
                 {
+                    f1_transferenciasLeitura += lidos;
                     // Se o lidos for maior que 0, ainda tem informação para ser lido
                     aindaTemDados = true;
                     // Guardamos quantos registros realmente lemos dessa fita (pode ser < 19)
@@ -212,6 +245,7 @@ void intercalacao()
         {
             // Pego o menor valor que esta no heap e coloco na fita de saida
             fwrite(&heapIntercalacao[0], sizeof(Registro), 1, fitaSaida);
+            f1_transferenciasEscrita++;
             contFitaSaida++;
 
             // Salvo a fita de origem dele
@@ -264,13 +298,16 @@ void redistribuir()
 
     //Leio um registro da fita de saida
     while (fread(&alunoAtual, sizeof(Registro), 1, fitaSaida)) {
+        f1_transferenciasLeitura++;
         //Se a nota atual for menor que a anterior, quer dizer que começou um bloco novo
         if (!primeiro && alunoAtual.aluno.nota < alunoAnterior.aluno.nota) {
+            f1_comparacoesChaves++;
             //Inicio uma nova fita
             fitaAlvo = (fitaAlvo + 1) % 19;
         }
         //Se não for, ainda estamos no mesmo bloco na saida e escrevo na fita atual
         fwrite(&alunoAtual, sizeof(Registro), 1, fitasEntrada[fitaAlvo]);
+        f1_transferenciasEscrita++;
         //Agora o anterior recebe o atual para comparar
         //E como não é o primeiro, não vai dar erro
         alunoAnterior = alunoAtual;
@@ -329,12 +366,14 @@ void refazerHeap(Registro alunos[], int i, int n)
     // Compara com o filho da esquerda
     if (esq < n && ehMaior(alunos[menor], alunos[esq]))
     {
+        f1_comparacoesChaves++;
         menor = esq;
     }
 
     // Compara com filho da direita
     if (dir < n && ehMaior(alunos[menor], alunos[dir]))
     {
+        f1_comparacoesChaves++;
         menor = dir;
     }
 
@@ -357,4 +396,15 @@ bool ehMaior(Registro a, Registro b)
     }
     // Se nenhum dos dois estiverem marcado, retorna de acordo com a nota
     return a.aluno.nota > b.aluno.nota;
+}
+
+void imprime_resultado_final(const char* arquivo, int qtd) {
+    FILE *f = fopen(arquivo, "rb");
+    Registro r;
+    printf("\n--- Primeiros registros ordenados ---\n");
+    for(int i = 0; i < (qtd < 10 ? qtd : 10); i++) {
+        if(fread(&r, sizeof(Registro), 1, f))
+            printf("Nota: %.2f | Inscricao: %ld\n", r.aluno.nota, r.aluno.nInscricao);
+    }
+    fclose(f);
 }
