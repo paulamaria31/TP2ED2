@@ -74,7 +74,8 @@ void ordena2F(int quantidade, int situacao)
         arq = fopen("PROVAO.bin", "rb");
         break;
     default:
-        break;
+        printf ("Situacao invalida.\n"); 
+        return;
     }
 }
 void ordenaF(int quantidade, int situacao)
