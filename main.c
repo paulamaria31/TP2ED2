@@ -155,7 +155,7 @@ void ordenaQuick(int quantidade, int situacao, bool imprimir)
 
     if (imprimir)
     {
-        printf("Antes da ordenação (primeiros 5):\n");
+        printf("Antes da ordenação:\n");
         imprime_primeiros(work, quantidade);
     }
 
@@ -196,7 +196,7 @@ void ordenaQuick(int quantidade, int situacao, bool imprimir)
 
     if (imprimir)
     {
-        printf("Depois da ordenação (primeiros 5):\n");
+        printf("Depois da ordenação:\n");
         imprime_primeiros(work, quantidade);
     }
 }
