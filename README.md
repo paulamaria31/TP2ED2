@@ -22,20 +22,20 @@ de, no máximo, 10 registros.
 
 A 2ª fase deste trabalho corresponde à análise experimental da complexidade de desempenho dos 3
 métodos mencionados, considerando os seguintes quesitos:
- número de transferências (leitura) de registros da memória externa para a memória interna;
- número de transferências (escrita) de registros da memória interna para a memória externa;
- número de comparações entre valores do campo de ordenação dos registros;
- tempo de execução (tempo do término de execução menos o tempo do início de execução).
+- número de transferências (leitura) de registros da memória externa para a memória interna;
+- número de transferências (escrita) de registros da memória interna para a memória externa;
+- número de comparações entre valores do campo de ordenação dos registros;
+- tempo de execução (tempo do término de execução menos o tempo do início de execução).
 
 O programa deve ser implementado de tal forma que seja possível executá-lo, livremente, a partir da seguinte linha de comando no console:
 ordena <método> <quantidade> <situação> [-P]
 
 onde:
- <método> representa o método de ordenação externa a ser executado, podendo ser um número
+- <método> representa o método de ordenação externa a ser executado, podendo ser um número
 inteiro de 1 a 3, de acordo com a ordem dos métodos mencionados;
- <quantidade> representa a quantidade de alunos (linhas do arquivo texto) a serem ordenados;
- <situação> representa a situação de ordem inicial do arquivo, podendo ser 1 (arquivo ordenado
+- <quantidade> representa a quantidade de alunos (linhas do arquivo texto) a serem ordenados;
+- <situação> representa a situação de ordem inicial do arquivo, podendo ser 1 (arquivo ordenado
 ascendentemente pelas notas), 2 (arquivo ordenado descendentemente pelas notas) ou 3 (arquivo
 desordenado aleatoriamente pelas notas);
- [-P] representa um argumento opcional que deve ser colocado quando se deseja que os dados dos
+- [-P] representa um argumento opcional que deve ser colocado quando se deseja que os dados dos
 alunos a serem ordenados e o resultado da ordenação realizada sejam apresentados na tela.
