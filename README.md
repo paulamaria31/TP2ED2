@@ -11,7 +11,7 @@ seguintes métodos de ordenação externa apresentados em sala de aula:
     
     3. Quicksort externo.
 
-A 1ª fase deste trabalho corresponde à implementação em C dos 3 métodos mencionados. Para o
+A 1ª fase deste trabalho corresponde à implementação em C++ dos 3 métodos mencionados. Para o
 método 1, deve ser considerada a existência de (a) memória interna disponível para armazenar um
 vetor de, no máximo, 10 registros, e (b) 20 fitas de armazenamento externo, sendo 10 fitas de entrada e
 10 fitas de saída a cada etapa de intercalação. Para o método 2, deve ser considerada a existência de
