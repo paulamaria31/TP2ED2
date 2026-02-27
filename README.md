@@ -2,6 +2,7 @@ Trabalho Prático 2 - Estrutra de Dados
 
 O objetivo deste trabalho consiste em um estudo mais profundo da complexidade de desempenho dos
 seguintes métodos de ordenação externa apresentados em sala de aula:
+
     1. Intercalação balanceada de vários caminhos (2f fitas) utilizando, na etapa de geração dos blocos
     ordenados, a técnica de seleção por substituição.
     
