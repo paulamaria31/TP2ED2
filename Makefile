@@ -4,7 +4,7 @@ CFLAGS = -Wall -g
 
 OBJ = main.o ordenaF1.o ordena2F.o ordenaQuick.o
 
-TARGET = ordeno
+TARGET = ordena
 
 all: $(TARGET)
 

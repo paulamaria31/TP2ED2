@@ -13,10 +13,7 @@ typedef struct {
     int marcado; 
 } RegistroHeap;
 
+// Protótipo ajustado para a main (2).c
 void ordenarArquivo2F(int quantidade, FILE* arq, bool imprimir);
-void faseGeracaoBlocos(FILE* arq, int* numBlocos, int quantidade);
-void faseIntercalacao2F(int numBlocos);
-void intercalarBlocos(int fitaMin, int fitaMax, int fitaDestinoIdx);
-void refazerHeap2F(RegistroHeap heap[], int i, int n);
 
 #endif

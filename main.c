@@ -95,6 +95,7 @@ void ordena2F(int quantidade, int situacao, bool imprimir)
     }
 
     ordenarArquivo2F(quantidade, arq, imprimir);
+    if (imprimir) imprime_primeiros("Saida.bin", quantidade);
 
     fclose(arq);
 }
